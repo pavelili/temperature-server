@@ -21,7 +21,7 @@ describe('app routes', () => {
 
   it('status route returns a status code of 204 when POST route is hit', () => {
     return request(app)
-      .post('/status')
+      .get('/status')
       .then(res => {
         expect(res.status).toEqual(204);
       });
