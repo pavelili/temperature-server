@@ -54,4 +54,23 @@ describe('app routes', () => {
         expect(res.status).toEqual(204);
       });
   });
+
+  it('temp adds a new temperature by location to database', async() => {
+    const location = JSON.parse(JSON.stringify(await Location.create({
+      name: 'Jupiter'
+    })));
+    return request(app)
+      .post(`/temp/${location._id}`)
+      .send({
+        temperature: 37.3
+      })
+      .then(res => {
+        expect(res.body).toEqual({
+          _id: expect.any(String),
+          temperature: '37.3',
+          location: location._id,
+          __v: 0
+        });
+      });
+  });
 });
