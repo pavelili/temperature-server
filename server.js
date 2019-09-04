@@ -1,5 +1,8 @@
 require('dotenv').config();
 require('./lib/utils/connect')();
+const getTemps = require('./lib/utils/networkSubscriber');
+
+getTemps();
 
 const app = require('./lib/app');
 
