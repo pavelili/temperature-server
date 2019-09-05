@@ -61,12 +61,12 @@ describe('app routes', () => {
     return request(app)
       .get(`/api/v1/temps/${loc1._id}`)
       .then(res => {
-        expect(res.body).toEqual([{
+        expect(res.body).toEqual({
           _id: loc1._id,
           name: loc1.name,
           temps: ['12.5', '74'],
           __v: 0
-        }]);
+        });
       });
   });
 });
