@@ -1,22 +1,37 @@
 require('dotenv').config();
 
+const client = require('../lib/utils/client');
 const request = require('supertest');
 const app = require('../lib/app');
-const connect = require('../lib/utils/connect');
-const mongoose = require('mongoose');
-const Location = require('../lib/models/Location');
+const child_process = require('child_process');
 
 describe('app routes', () => {
-  beforeAll(() => {
-    connect();
-  });
-
   beforeEach(() => {
-    return mongoose.connection.dropDatabase();
+    child_process.execSync('npm run recreate-tables');
   });
 
   afterAll(() => {
-    return mongoose.connection.close();
+    return client.end();
+  });
+
+  const createLoc = () => request(app)
+    .post('/register')
+    .send({
+      name: 'Mars'
+    })
+    .expect(200);
+
+  const testLoc = loc => {
+    expect(loc).toEqual({
+      id: expect.any(Number)
+    });
+  };
+  
+  it('creates a location', () => {
+    return createLoc()
+      .then(({ body }) => {
+        testLoc(body);
+      });
   });
 
   it('status route returns a status code of 204 when POST route is hit', () => {
@@ -36,41 +51,42 @@ describe('app routes', () => {
       .then(res => {
         expect(res.status).toEqual(200);
         expect(res.body).toEqual({
-          id: expect.any(String)
+          id: expect.any(Number)
         });
       });
   });
 
-  it('deregister returns a status code of 204', async() => {
-    const location = JSON.parse(JSON.stringify(await Location.create({
-      name: 'Jupiter'
-    })));
-    return request(app)
-      .delete('/deregister')
-      .send({
-        id: location._id
-      })
-      .then(res => {
-        expect(res.status).toEqual(204);
-      });
-  });
+  // it('deregister returns a status code of 204', async() => {
+  //   const location = JSON.parse(JSON.stringify(await Location.create({
+  //     name: 'Jupiter'
+  //   })));
+  //   return request(app)
+  //     .delete('/deregister')
+  //     .send({
+  //       id: location._id
+  //     })
+  //     .then(res => {
+  //       expect(res.status).toEqual(204);
+  //     });
+  // });
 
   it('temp adds a new temperature by location to database', async() => {
-    const location = JSON.parse(JSON.stringify(await Location.create({
-      name: 'Jupiter'
-    })));
-    return request(app)
-      .post(`/temp/${location._id}`)
-      .send({
-        temperature: 37.3
-      })
-      .then(res => {
-        expect(res.body).toEqual({
-          _id: expect.any(String),
-          temperature: '37.3',
-          location: location._id,
-          __v: 0
-        });
-      });
+    createLoc()
+      .then(
+        (location) => {
+          return request(app)
+            .post(`/temp/${location.id}`)
+            .send({
+              temperature: 37.3
+            })
+            .then(res => {
+              expect(res.body).toEqual({
+                id: expect.any(String),
+                temperature: '37.3',
+                location: location.id
+              });
+            });
+        }
+      );
   });
 });

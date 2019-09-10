@@ -7,9 +7,14 @@ client.query(`
     name VARCHAR(256) NOT NULL,
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
+  CREATE TABLE temperatures (
+    id SERIAL PRIMARY KEY,
+    temperature INTEGER,
+    location INTEGER REFERENCES locations (id)
+  );
 `)
   .then(
-    () => console.log('create tables complete'),
+    () => console.log('create table complete'),
     err => console.log(err)
   )
   .then(() => {

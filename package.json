@@ -10,7 +10,7 @@
     "start:watch": "nodemon server.js",
     "create-tables": "node data/create-tables.js",
     "drop-tables": "node data/drop-tables.js",
-    "recreate-tables": "npm nun drop-tables && npm run create-tables"
+    "recreate-tables": "npm run drop-tables && npm run create-tables"
   },
   "jest": {
     "testEnvironment": "node"
