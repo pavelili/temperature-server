@@ -2,6 +2,8 @@
 const client = require('../lib/utils/client');
 
 client.query(`
+  DROP TABLE IF EXISTS temps;
+  DROP TABLE IF EXISTS temperatures;
   DROP TABLE IF EXISTS locations;
 `)
   .then(
